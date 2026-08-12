@@ -1,0 +1,30 @@
+# Task definition: generate a structured multiple-choice pre/post-test from a class's topics,
+# learning objectives, and any uploaded materials' extracted text.
+from crewai import Task
+
+_QUESTION_SCHEMA_HINT = (
+    "Return ONLY a JSON array (no prose, no markdown fences) of question objects, each shaped "
+    'exactly like: {"topic": "<topic name>", "question": "<question text>", '
+    '"options": ["<option A>", "<option B>", "<option C>", "<option D>"], "correctIndex": <0-3>}. '
+    "Generate exactly {question_count} questions, covering every topic listed at least once."
+)
+
+
+def build_test_generation_task(agent, assessment_type: str) -> Task:
+    label = "pre-test" if assessment_type == "pre-test" else "post-test"
+    description = (
+        f"Generate a {label} for this class.\n\n"
+        "Topics: {topics}\n\n"
+        "Learning objectives: {learning_objectives}\n\n"
+        "Course material excerpts (use these for context/accuracy when present, but you may "
+        "still generate reasonable questions from the topics/objectives alone if materials are "
+        "empty or thin):\n{materials_text}\n\n" + _QUESTION_SCHEMA_HINT
+    )
+    return Task(
+        description=description,
+        expected_output=(
+            "A JSON array of multiple-choice question objects matching the exact schema "
+            "described above — nothing else."
+        ),
+        agent=agent,
+    )

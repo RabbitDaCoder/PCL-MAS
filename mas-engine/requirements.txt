@@ -1,0 +1,9 @@
+fastapi
+uvicorn[standard]
+python-dotenv
+pyyaml
+crewai
+crewai-tools
+litellm
+pypdf
+requests

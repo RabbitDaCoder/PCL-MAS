@@ -1,0 +1,76 @@
+// Routes for the 1:1 Administrative AI direct-message channel — student-only, deliberately
+// separate from class-group chat (/classes/:classId/messages).
+const { Router } = require("express");
+const controller = require("../controllers/directMessageController");
+const createAuthenticate = require("../middlewares/authenticate");
+const requireRole = require("../middlewares/role.middleware");
+
+const authenticate = createAuthenticate(controller.deps);
+const router = Router();
+
+/**
+ * @openapi
+ * /classes/{classId}/dm:
+ *   get:
+ *     tags: [DirectMessages]
+ *     summary: The current student's own 1:1 Administrative AI thread history for a class
+ *     security: [{ bearerAuth: [] }]
+ *     parameters:
+ *       - in: path
+ *         name: classId
+ *         required: true
+ *         schema: { type: string }
+ *     responses:
+ *       200:
+ *         description: Thread retrieved
+ *         content:
+ *           application/json:
+ *             schema: { $ref: "#/components/schemas/SuccessResponse" }
+ *       403:
+ *         description: No access to this class
+ */
+router.get(
+  "/classes/:classId/dm",
+  authenticate,
+  requireRole("student"),
+  controller.handleGetDmThread,
+);
+
+/**
+ * @openapi
+ * /classes/{classId}/dm:
+ *   post:
+ *     tags: [DirectMessages]
+ *     summary: Send a message into the current student's own 1:1 Administrative AI thread
+ *     security: [{ bearerAuth: [] }]
+ *     parameters:
+ *       - in: path
+ *         name: classId
+ *         required: true
+ *         schema: { type: string }
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [content]
+ *             properties:
+ *               content: { type: string }
+ *     responses:
+ *       201:
+ *         description: Message sent
+ *         content:
+ *           application/json:
+ *             schema: { $ref: "#/components/schemas/SuccessResponse" }
+ *       403:
+ *         description: No access to this class
+ */
+router.post(
+  "/classes/:classId/dm",
+  authenticate,
+  requireRole("student"),
+  controller.handleSendDmMessage,
+);
+
+module.exports = router;

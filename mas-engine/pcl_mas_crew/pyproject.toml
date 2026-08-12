@@ -1,0 +1,25 @@
+[project]
+name = "pcl_mas_crew"
+version = "0.1.0"
+description = "pcl_mas_crew using crewAI"
+authors = [{ name = "Your Name", email = "you@example.com" }]
+requires-python = ">=3.10,<3.14"
+dependencies = [
+    "crewai[tools]>=1.15.12,<2.0.0"
+]
+
+[project.scripts]
+pcl_mas_crew = "pcl_mas_crew.main:run"
+run_crew = "pcl_mas_crew.main:run"
+train = "pcl_mas_crew.main:train"
+replay = "pcl_mas_crew.main:replay"
+test = "pcl_mas_crew.main:test"
+run_with_trigger = "pcl_mas_crew.main:run_with_trigger"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.crewai]
+type = "crew"
+project_id = "6d17bf2f-a7f2-4eb3-b2a0-804080ddc8f7"
