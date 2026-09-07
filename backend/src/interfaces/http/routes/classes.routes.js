@@ -63,6 +63,9 @@ router.get(
  *                 type: array
  *                 items: { type: string }
  *                 example: ["Introduction to Programming", "Variables and Data Types"]
+ *               aiInstructions:
+ *                 type: string
+ *                 description: Private standing instructions for the AI agents in this class (tone, escalation policy, etc.) — never shown to students.
  *               startDate: { type: string, format: date }
  *               endDate: { type: string, format: date }
  *               enrollmentMode: { type: string, enum: [code, approval], default: code }

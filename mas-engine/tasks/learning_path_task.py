@@ -19,7 +19,10 @@ def build_learning_path_task(agent) -> Task:
         "Class topics: {topics}\n\n"
         "Learning objectives: {learning_objectives}\n\n"
         "Per-topic pre-test scores (0-100): {topic_scores}\n\n"
-        "Topics the student is weakest in: {weak_topics}\n\n" + _SCHEMA_HINT
+        "Topics the student is weakest in: {weak_topics}\n\n"
+        "The human lecturer's standing instructions for this class (follow these — they override "
+        "your default judgment where they conflict, e.g. tone, pacing, how directive to be):\n"
+        "{lecturer_instructions}\n\n" + _SCHEMA_HINT
     )
     return Task(
         description=description,

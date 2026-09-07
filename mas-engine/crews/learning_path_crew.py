@@ -34,6 +34,7 @@ def generate_learning_path(
     learning_objectives: list[str],
     topic_scores: dict[str, float],
     weak_topics: list[str],
+    lecturer_instructions: str = "",
 ) -> LearningPathResult:
     config = get_agent_llm_config("instructor")
     if not config.is_configured:
@@ -45,6 +46,7 @@ def generate_learning_path(
         "topic_scores": ", ".join(f"{t}: {s:.0f}" for t, s in topic_scores.items())
         or "No scores available",
         "weak_topics": ", ".join(weak_topics) or "None identified",
+        "lecturer_instructions": lecturer_instructions or "(none given)",
     }
 
     def run_once() -> LearningPathResult:

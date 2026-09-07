@@ -1,7 +1,9 @@
-// Student "AI Chat" — the 1:1 Administrative AI channel, a separate surface from the class-group
-// Chat page. History loads via REST, live updates arrive over the `classes` socket namespace's
-// `dm:message:new` event (scoped to this classId). AI messages always carry a visible identity
-// badge — never presented as an unlabeled system message or a human lecturer.
+// Student "AI Chat" — a private 1:1 channel with the class's AI agents, a separate surface from
+// the class-group Chat page. Any of Admin/Instructor/Lecturer may reply here, not just Admin —
+// the student can call a specific one's attention with "@agent". History loads via REST, live
+// updates arrive over the `classes` socket namespace's `dm:message:new` event (scoped to this
+// classId). AI messages always carry a visible identity badge — never presented as an unlabeled
+// system message or a human lecturer.
 import { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { ArrowLeft, Bot, Send, Sparkles } from "lucide-react";
@@ -106,7 +108,7 @@ export default function StudentClassAiChat() {
     const optimisticMessage = {
       id: optimisticId,
       classId,
-      sender: "student",
+      senderType: "student",
       content,
       createdAt: new Date().toISOString(),
     };
@@ -157,10 +159,10 @@ export default function StudentClassAiChat() {
             </span>
             <div>
               <p className="text-sm font-semibold text-[var(--color-text)]">
-                Administrative AI
+                AI Chat
               </p>
               <p className="text-xs text-[var(--color-text-secondary)]">
-                Your private onboarding assistant for this class
+                Your private thread with this class's AI agents — use @admin, @instructor, or @lecturer to reach one directly
               </p>
             </div>
           </div>
@@ -190,7 +192,7 @@ export default function StudentClassAiChat() {
         ) : (
           <>
             {messages.map((message) => {
-              const isAi = message.sender === "administrative-ai";
+              const isAi = message.senderType === "ai";
               return (
                 <div
                   key={message.id}
@@ -200,7 +202,7 @@ export default function StudentClassAiChat() {
                 >
                   {isAi ? (
                     <span className="flex items-center gap-1 text-xs font-medium text-[var(--color-accent)]">
-                      <Bot className="h-3.5 w-3.5" /> Administrative AI
+                      <Bot className="h-3.5 w-3.5" /> {message.senderName}
                     </span>
                   ) : null}
                   <div
@@ -223,7 +225,7 @@ export default function StudentClassAiChat() {
             {isTyping ? (
               <div className="self-start max-w-[85%] sm:max-w-md">
                 <span className="flex items-center gap-1 text-xs font-medium text-[var(--color-accent)]">
-                  <Bot className="h-3.5 w-3.5" /> Administrative AI
+                  <Bot className="h-3.5 w-3.5" /> AI agent
                 </span>
                 <div className="mt-1 rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] px-4 py-2 text-xs text-[var(--color-text-secondary)]">
                   is typing...
@@ -244,7 +246,7 @@ export default function StudentClassAiChat() {
           onChange={(event) => setDraft(event.target.value)}
           onKeyDown={handleDraftKeyDown}
           rows={1}
-          placeholder="Message the Administrative AI…"
+          placeholder="Message your AI agents… (try @admin, @instructor, or @lecturer)"
           className="min-h-11 max-h-32 flex-1 resize-none rounded-2xl border border-[var(--color-border)] bg-transparent px-4 py-2.5 text-sm text-[var(--color-text)] outline-none focus:border-[var(--color-accent)]"
         />
         <Button

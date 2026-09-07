@@ -30,6 +30,9 @@ const classSchema = new Schema(
     // Ordered arrays, not free text — later feed the AI learning system as structured context.
     learningObjectives: [{ type: String, trim: true }],
     topics: [{ type: String, trim: true }],
+    // Private standing instructions for the AI agents (tone, grading leniency, what to answer
+    // directly vs. defer on) — never shown to students, only injected into agent context.
+    aiInstructions: { type: String, trim: true },
     startDate: { type: Date },
     endDate: { type: Date },
     enrollmentMode: {

@@ -5,6 +5,7 @@ const {
   assertClassAccess,
   assertPretestCompleted,
 } = require("../classes/classAccess");
+const { runLearningPathGeneration } = require("./generateLearningPath");
 
 async function getLearningPath(
   { classRepository, learningProfileRepository, assessmentRepository },
@@ -20,11 +21,23 @@ async function getLearningPath(
     throw new AppError("A studentId is required.", 400);
   }
 
-  const profile = await learningProfileRepository.findOne(
-    targetStudentId,
-    classId,
-  );
+  let profile = await learningProfileRepository.findOne(targetStudentId, classId);
+
   if (!profile || !profile.learningPathSteps?.length) {
+    if (role === "student") {
+      const generated = await runLearningPathGeneration(
+        { classRepository, assessmentRepository, learningProfileRepository },
+        { classId, studentId: targetStudentId },
+      );
+      profile = await learningProfileRepository.findOne(targetStudentId, classId);
+      return {
+        generated: true,
+        summary: generated.summary,
+        steps: generated.steps,
+        lastAssessmentScore: profile?.lastAssessmentScore ?? null,
+        reviewStatus: profile?.reviewStatus ?? null,
+      };
+    }
     return { generated: false };
   }
 

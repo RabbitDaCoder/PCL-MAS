@@ -27,6 +27,13 @@ const assessmentSchema = new Schema(
       enum: ["pending", "in_progress", "completed"],
       default: "pending",
     },
+    reviewStatus: {
+      type: String,
+      enum: ["pending", "approved", "rejected"],
+      default: "pending",
+    },
+    approvedBy: { type: Types.ObjectId, ref: "User" },
+    reviewedAt: { type: Date },
     startedAt: { type: Date },
     completedAt: { type: Date },
   },

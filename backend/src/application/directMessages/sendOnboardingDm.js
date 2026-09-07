@@ -65,7 +65,8 @@ async function sendOnboardingDm(
     const message = await directMessageRepository.create({
       studentId,
       classId,
-      sender: "administrative-ai",
+      senderType: "ai",
+      aiAgent: "Admin",
       content: greeting,
     });
     const summary = toDmSummary(message);

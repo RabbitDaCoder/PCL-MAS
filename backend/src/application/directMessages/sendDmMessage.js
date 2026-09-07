@@ -12,7 +12,7 @@ async function sendDmMessage(
   const message = await directMessageRepository.create({
     studentId,
     classId,
-    sender: "student",
+    senderType: "student",
     content,
   });
   return toDmSummary(message);

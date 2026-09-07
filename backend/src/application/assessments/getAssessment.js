@@ -63,6 +63,15 @@ async function getAssessment(
       };
     }
 
+    if (assessment.reviewStatus && assessment.reviewStatus !== "approved") {
+      return {
+        generated: false,
+        pendingReview: true,
+        message:
+          "Your pre-test is waiting for lecturer review and approval before it is released to students.",
+      };
+    }
+
     if (assessment.status === "pending") {
       assessment.status = "in_progress";
       assessment.startedAt = new Date();
@@ -79,11 +88,36 @@ async function getAssessment(
   }
 
   // lecturer view: generation/completion stats + a preview with correct answers
-  const assessments = await assessmentRepository.findByClassAndType(
+  let assessments = await assessmentRepository.findByClassAndType(
     classId,
     dbType,
   );
-  if (assessments.length === 0) return { generated: false };
+
+  if (assessments.length === 0 && dbType === "pre_test") {
+    const classDoc = await classRepository.findById(classId);
+    if (!classDoc) {
+      throw new AppError("Class not found.", 404);
+    }
+
+    await generateAssessment(
+      { classRepository, materialRepository, assessmentRepository },
+      {
+        classId,
+        lecturerId: classDoc.lecturerId.toString(),
+        type,
+      },
+    );
+    assessments = await assessmentRepository.findByClassAndType(classId, dbType);
+  }
+
+  if (assessments.length === 0) {
+    return {
+      generated: false,
+      autoGenerating: dbType === "pre_test",
+      message:
+        "Your lecturer AI is generating this pre-test for review automatically. It will appear here for approval shortly.",
+    };
+  }
 
   const completedCount = assessments.filter(
     (a) => a.status === "completed",
@@ -103,6 +137,7 @@ async function getAssessment(
     totalStudents: assessments.length,
     completedCount,
     averageScore,
+    reviewStatus: assessments[0].reviewStatus ?? "pending",
     questions: assessments[0].questions,
   };
 }

@@ -4,6 +4,7 @@ const MongoUserRepository = require("../../../infrastructure/repositories/MongoU
 const MongoClassRepository = require("../../../infrastructure/repositories/MongoClassRepository");
 const MongoAssessmentRepository = require("../../../infrastructure/repositories/MongoAssessmentRepository");
 const MongoDirectMessageRepository = require("../../../infrastructure/repositories/MongoDirectMessageRepository");
+const MongoMaterialRepository = require("../../../infrastructure/repositories/MongoMaterialRepository");
 const tokenService = require("../../../infrastructure/security/tokenService");
 const getDmThread = require("../../../application/directMessages/getDmThread");
 const sendDmMessage = require("../../../application/directMessages/sendDmMessage");
@@ -18,11 +19,13 @@ const userRepository = new MongoUserRepository();
 const classRepository = new MongoClassRepository();
 const assessmentRepository = new MongoAssessmentRepository();
 const directMessageRepository = new MongoDirectMessageRepository();
+const materialRepository = new MongoMaterialRepository();
 const deps = {
   userRepository,
   classRepository,
   assessmentRepository,
   directMessageRepository,
+  materialRepository,
   tokenService,
 };
 

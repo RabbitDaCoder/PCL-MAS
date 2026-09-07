@@ -11,11 +11,16 @@ class RequestPayload(BaseModel):
     request: str
 
 
+class ChatTurnResponse(BaseModel):
+    agent: str
+    message: str
+
+
 class RequestResponse(BaseModel):
-    response: str
+    turns: list[ChatTurnResponse]
 
 
 @router.post("/requests", response_model=RequestResponse)
 def post_request(payload: RequestPayload) -> RequestResponse:
-    result = run_request(payload.request)
-    return RequestResponse(response=result)
+    turns = run_request(payload.request)
+    return RequestResponse(turns=turns)

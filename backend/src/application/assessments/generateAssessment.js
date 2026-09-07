@@ -104,6 +104,7 @@ async function generateAssessment(
     learningObjectives: classDoc.learningObjectives ?? [],
     materialUrls,
     materialsText,
+    lecturerInstructions: classDoc.aiInstructions ?? "",
     questionCount: 8,
   };
 
@@ -133,6 +134,7 @@ async function generateAssessment(
       correctAnswer: q.options[q.correctIndex],
     })),
     status: "pending",
+    reviewStatus: "pending",
   }));
 
   await assessmentRepository.createMany(assessmentDocs);

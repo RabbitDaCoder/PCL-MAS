@@ -16,6 +16,7 @@ class GenerateLearningPathPayload(BaseModel):
     learningObjectives: list[str] = []
     topicScores: dict[str, float] = {}
     weakTopics: list[str] = []
+    lecturerInstructions: str = ""
 
 
 @router.post("/generate-learning-path", response_model=LearningPathResult)
@@ -28,6 +29,7 @@ def post_generate_learning_path(
             learning_objectives=payload.learningObjectives,
             topic_scores=payload.topicScores,
             weak_topics=payload.weakTopics,
+            lecturer_instructions=payload.lecturerInstructions,
         )
     except LearningPathGenerationError as exc:
         raise HTTPException(status_code=502, detail=str(exc)) from exc

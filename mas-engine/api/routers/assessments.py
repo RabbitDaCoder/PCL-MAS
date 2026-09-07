@@ -16,6 +16,7 @@ class GenerateAssessmentPayload(BaseModel):
     learningObjectives: list[str] = []
     materialUrls: list[str] = []
     materialsText: str = ""
+    lecturerInstructions: str = ""
     questionCount: int = 8
 
 
@@ -35,6 +36,7 @@ def post_generate_assessment(payload: GenerateAssessmentPayload) -> GenerateAsse
             topics=payload.topics,
             learning_objectives=payload.learningObjectives,
             materials_text=materials_text,
+            lecturer_instructions=payload.lecturerInstructions,
             question_count=payload.questionCount,
         )
     except AssessmentGenerationError as exc:

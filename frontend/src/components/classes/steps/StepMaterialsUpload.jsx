@@ -1,5 +1,5 @@
-// Wizard step 5 — optional initial materials upload right after the class is created, so the
-// lecturer can seed the class with PDFs the AI pipeline will later use as knowledge-base input.
+// Wizard step 5 — required initial materials upload right after the class is created, so the
+// lecturer seeds the class with PDFs the AI agents use as their knowledge base for this class.
 import { useRef, useState } from "react";
 import { Upload, FileText } from "lucide-react";
 import Button from "../../ui/Button";
@@ -52,9 +52,11 @@ export default function StepMaterialsUpload({ classId, onUploaded }) {
   return (
     <div className="flex flex-col gap-4">
       <p className="text-sm text-[var(--color-text-secondary)]">
-        Upload course PDFs (slides, notes, syllabus). The AI agents will use
-        these to generate pre-tests, learning paths, and teaching content for
-        this class. This step is optional — you can always add materials later.
+        Upload course PDFs (slides, notes, syllabus). Your AI agents use these
+        to generate pre-tests and learning paths, and to answer questions and
+        teach with your class's real content instead of generic filler.
+        Upload at least one to finish setting up this class — you can add
+        more anytime afterward.
       </p>
 
       <div className="flex flex-col gap-3 rounded-2xl border border-[var(--color-border)] p-4">

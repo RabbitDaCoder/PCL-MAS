@@ -11,6 +11,12 @@ const messageSchema = new Schema(
       enum: ["student", "lecturer", "admin", "ai"],
       required: true,
     },
+    // Which AI agent authored this message — only set when senderType is "ai", so the chat UI
+    // can show which agent is actually speaking instead of a single generic AI identity.
+    aiAgent: {
+      type: String,
+      enum: ["Admin", "Instructor", "Lecturer", "System"],
+    },
     recipientId: { type: Types.ObjectId, ref: "User" },
     content: { type: String, required: true },
     messageType: {

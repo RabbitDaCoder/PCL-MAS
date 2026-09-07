@@ -117,4 +117,11 @@ router.post(
   controller.handleSubmitAssessment,
 );
 
+router.post(
+  "/classes/:classId/assessments/:type/review",
+  authenticate,
+  requireRole("lecturer"),
+  controller.handleReviewAssessment,
+);
+
 module.exports = router;

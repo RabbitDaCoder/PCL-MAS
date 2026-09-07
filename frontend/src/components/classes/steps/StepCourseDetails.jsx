@@ -30,6 +30,14 @@ export default function StepCourseDetails({ values, setValue }) {
         itemPlaceholder="Introduction to Programming"
         reorderable
       />
+      <TextareaField
+        label="Instructions for your AI agents"
+        helperText="Private — students never see this. Tone, grading leniency, what the agents should answer directly vs. defer to you on, anything they should avoid."
+        placeholder="e.g. Be encouraging with beginners. If a question is about grading disputes or extensions, don't answer it yourself — tell the student you'll pass it to me."
+        value={values.aiInstructions}
+        onChange={(event) => setValue("aiInstructions", event.target.value)}
+        rows={4}
+      />
     </div>
   );
 }

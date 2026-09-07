@@ -1,6 +1,7 @@
 // Use-case: paginated message history for a class's chat — REST source of truth so history
 // survives even if a client's socket briefly drops. Owner lecturer or an active student member.
 const { assertClassAccess } = require("./classAccess");
+const { AI_AGENT_DISPLAY_NAMES } = require("../shared/aiAgentDisplayNames");
 
 function toMessageSummary(message) {
   const sender = message.senderId;
@@ -11,9 +12,10 @@ function toMessageSummary(message) {
     senderName: sender
       ? `${sender.firstName} ${sender.lastName}`
       : message.senderType === "ai"
-        ? "Administrative AI"
+        ? (AI_AGENT_DISPLAY_NAMES[message.aiAgent] ?? "Administrative AI")
         : "System",
     senderRole: message.senderType,
+    aiAgent: message.senderType === "ai" ? (message.aiAgent ?? "Admin") : undefined,
     content: message.content,
     createdAt: message.createdAt,
   };

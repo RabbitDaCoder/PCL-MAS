@@ -18,7 +18,10 @@ def build_test_generation_task(agent, assessment_type: str) -> Task:
         "Learning objectives: {learning_objectives}\n\n"
         "Course material excerpts (use these for context/accuracy when present, but you may "
         "still generate reasonable questions from the topics/objectives alone if materials are "
-        "empty or thin):\n{materials_text}\n\n" + _QUESTION_SCHEMA_HINT
+        "empty or thin):\n{materials_text}\n\n"
+        "The human lecturer's standing instructions for this class (follow these — they override "
+        "your default judgment where they conflict, e.g. difficulty level, tone, question style, "
+        "topics to avoid):\n{lecturer_instructions}\n\n" + _QUESTION_SCHEMA_HINT
     )
     return Task(
         description=description,

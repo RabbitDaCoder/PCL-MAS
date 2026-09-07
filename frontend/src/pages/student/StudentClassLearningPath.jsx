@@ -1,14 +1,10 @@
 // Learning Path — student view: AI-generated personalized study plan from the pre-test.
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { ArrowLeft, Compass, Sparkles } from "lucide-react";
-import Button from "../../components/ui/Button";
+import { ArrowLeft, Compass } from "lucide-react";
 import Skeleton from "../../components/ui/Skeleton";
 import { useToast } from "../../context/ToastContext";
-import {
-  generateLearningPath,
-  getLearningPath,
-} from "../../services/learningPathService";
+import { getLearningPath } from "../../services/learningPathService";
 
 const PRIORITY_STYLES = {
   high: "text-[var(--color-error)] border-[var(--color-error)]",
@@ -23,11 +19,6 @@ export default function StudentClassLearningPath() {
 
   const [path, setPath] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [isGenerating, setIsGenerating] = useState(false);
-
-  function loadPath() {
-    return getLearningPath(classId).then((data) => setPath(data));
-  }
 
   useEffect(() => {
     let isMounted = true;
@@ -47,19 +38,6 @@ export default function StudentClassLearningPath() {
       isMounted = false;
     };
   }, [classId, showToast]);
-
-  async function handleGenerate() {
-    setIsGenerating(true);
-    try {
-      await generateLearningPath(classId);
-      showToast("Learning path generated.");
-      await loadPath();
-    } catch (error) {
-      showToast(error.message || "Couldn't generate your learning path.");
-    } finally {
-      setIsGenerating(false);
-    }
-  }
 
   return (
     <div className="flex flex-1 flex-col gap-6 px-4 py-6 sm:px-8 sm:py-10">
@@ -90,19 +68,9 @@ export default function StudentClassLearningPath() {
       ) : !path?.generated ? (
         <div className="max-w-lg rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] p-6">
           <p className="text-sm text-[var(--color-text-secondary)]">
-            Complete your pre-test first, then generate a personalized learning
-            path based on your results.
+            Your AI is generating your personalized learning path from your
+            pre-test results. This usually only takes a moment.
           </p>
-          <Button
-            className="mt-4 inline-flex items-center gap-2"
-            onClick={handleGenerate}
-            disabled={isGenerating}
-          >
-            <Sparkles className="h-4 w-4" />
-            {isGenerating
-              ? "Generating… this can take a moment"
-              : "Generate my learning path"}
-          </Button>
         </div>
       ) : (
         <div className="flex max-w-lg flex-col gap-4">

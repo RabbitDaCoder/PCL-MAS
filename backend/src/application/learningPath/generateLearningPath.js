@@ -66,6 +66,7 @@ async function runLearningPathGeneration(
           learningObjectives: classDoc.learningObjectives ?? [],
           topicScores,
           weakTopics,
+          lecturerInstructions: classDoc.aiInstructions ?? "",
         }),
       },
     );

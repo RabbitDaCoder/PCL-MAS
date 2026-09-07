@@ -68,6 +68,10 @@ export default function StepReview({ values, onEditStep }) {
           label="Topics"
           value={topics.length ? `${topics.length} added` : ""}
         />
+        <Row
+          label="AI instructions"
+          value={values.aiInstructions ? "Added" : ""}
+        />
       </ReviewSection>
 
       <ReviewSection

@@ -3,6 +3,7 @@ const MongoUserRepository = require("../../../infrastructure/repositories/MongoU
 const MongoClassRepository = require("../../../infrastructure/repositories/MongoClassRepository");
 const MongoMessageRepository = require("../../../infrastructure/repositories/MongoMessageRepository");
 const MongoAssessmentRepository = require("../../../infrastructure/repositories/MongoAssessmentRepository");
+const MongoMaterialRepository = require("../../../infrastructure/repositories/MongoMaterialRepository");
 const tokenService = require("../../../infrastructure/security/tokenService");
 const getMyClasses = require("../../../application/classes/getMyClasses");
 const createClass = require("../../../application/classes/createClass");
@@ -33,12 +34,14 @@ const classRepository = new MongoClassRepository();
 const messageRepository = new MongoMessageRepository();
 const assessmentRepository = new MongoAssessmentRepository();
 const directMessageRepository = new MongoDirectMessageRepository();
+const materialRepository = new MongoMaterialRepository();
 const deps = {
   userRepository,
   classRepository,
   messageRepository,
   assessmentRepository,
   directMessageRepository,
+  materialRepository,
   tokenService,
 };
 
@@ -66,6 +69,7 @@ async function handleCreateClass(req, res, next) {
       description,
       learningObjectives,
       topics,
+      aiInstructions,
       startDate,
       endDate,
       enrollmentMode,
@@ -83,6 +87,7 @@ async function handleCreateClass(req, res, next) {
       description,
       learningObjectives,
       topics,
+      aiInstructions,
       startDate,
       endDate,
       enrollmentMode,

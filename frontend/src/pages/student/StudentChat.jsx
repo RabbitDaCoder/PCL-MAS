@@ -352,7 +352,7 @@ export default function StudentChat() {
                 onChange={(event) => setDraft(event.target.value)}
                 onKeyDown={handleDraftKeyDown}
                 rows={1}
-                placeholder="Message this class…"
+                placeholder="Message this class… (try @admin, @instructor, or @lecturer)"
                 className="min-h-11 max-h-32 flex-1 resize-none rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] px-4 py-2.5 text-sm text-[var(--color-text)] outline-none focus-visible:border-[var(--color-text)]"
               />
               <button

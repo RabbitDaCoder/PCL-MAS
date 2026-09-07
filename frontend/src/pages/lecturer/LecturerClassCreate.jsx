@@ -72,6 +72,7 @@ export default function LecturerClassCreate() {
     description: "",
     learningObjectives: [],
     topics: [],
+    aiInstructions: "",
     startDate: "",
     endDate: "",
     enrollmentMode: "code",
@@ -85,6 +86,7 @@ export default function LecturerClassCreate() {
   const [isGeneratingCode, setIsGeneratingCode] = useState(false);
   const [formError, setFormError] = useState("");
   const [createdClassId, setCreatedClassId] = useState(null);
+  const [uploadedMaterials, setUploadedMaterials] = useState([]);
 
   const currentStep = stepIndex + 1;
 
@@ -187,7 +189,12 @@ export default function LecturerClassCreate() {
         return <StepReview values={values} onEditStep={goToStep} />;
       case 5:
         return (
-          <StepMaterialsUpload classId={createdClassId} onUploaded={() => {}} />
+          <StepMaterialsUpload
+            classId={createdClassId}
+            onUploaded={(material) =>
+              setUploadedMaterials((prev) => [...prev, material])
+            }
+          />
         );
       default:
         return null;
@@ -249,14 +256,23 @@ export default function LecturerClassCreate() {
                 Create class
               </AuthButton>
             ) : isMaterialsStep ? (
-              <Button
-                type="button"
-                variant="primary"
-                className="h-11 flex-1 text-sm"
-                onClick={handleFinish}
-              >
-                Finish
-              </Button>
+              <div className="flex flex-1 flex-col gap-2">
+                {uploadedMaterials.length === 0 ? (
+                  <span className="text-xs text-[var(--color-text-secondary)]">
+                    Upload at least one material to finish — your agents need it
+                    to teach and answer questions for this class.
+                  </span>
+                ) : null}
+                <Button
+                  type="button"
+                  variant="primary"
+                  className="h-11 w-full text-sm"
+                  onClick={handleFinish}
+                  disabled={uploadedMaterials.length === 0}
+                >
+                  Finish
+                </Button>
+              </div>
             ) : (
               <Button
                 type="button"
