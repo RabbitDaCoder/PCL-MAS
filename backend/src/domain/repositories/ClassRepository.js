@@ -67,6 +67,10 @@ class ClassRepository {
   async setMembershipStatus(_classId, _studentId, _status, _extra) {
     throw new Error("Not implemented");
   }
+
+  async updateAiInstructions(_classId, _aiInstructions) {
+    throw new Error("Not implemented");
+  }
 }
 
 module.exports = ClassRepository;

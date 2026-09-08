@@ -31,6 +31,8 @@ async function login(
     role: user.role,
   });
 
+  await userRepository.recordLogin(user.id);
+
   return { user: toPublicUser(user), accessToken };
 }
 

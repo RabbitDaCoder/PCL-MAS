@@ -22,7 +22,9 @@ def build_learning_path_task(agent) -> Task:
         "Topics the student is weakest in: {weak_topics}\n\n"
         "The human lecturer's standing instructions for this class (follow these — they override "
         "your default judgment where they conflict, e.g. tone, pacing, how directive to be):\n"
-        "{lecturer_instructions}\n\n" + _SCHEMA_HINT
+        "{lecturer_instructions}\n\n"
+        "Relevant things you remember about this student and class from past interactions (use "
+        "if helpful, ignore if not relevant):\n{memory_context}\n\n" + _SCHEMA_HINT
     )
     return Task(
         description=description,

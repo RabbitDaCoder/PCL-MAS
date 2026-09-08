@@ -7,3 +7,4 @@ crewai-tools
 litellm
 pypdf
 requests
+lancedb==0.30.0

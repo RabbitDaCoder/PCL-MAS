@@ -16,6 +16,7 @@ async function triggerAdminAiReply(
     messageRepository,
     userRepository,
     materialRepository,
+    aiInteractionRepository,
   },
   { classId, studentId, content },
   { emitClassMessage },
@@ -65,7 +66,7 @@ async function triggerAdminAiReply(
         method: "POST",
         headers: { "Content-Type": "application/json" },
         signal: controller.signal,
-        body: JSON.stringify({ request: requestText }),
+        body: JSON.stringify({ request: requestText, classId, studentId }),
       });
       if (!response.ok) return;
       const body = await response.json();
@@ -87,6 +88,23 @@ async function triggerAdminAiReply(
         messageType: "ai_response",
       });
       emitClassMessage(classId, toMessageSummary(message));
+
+      // Best-effort interaction log — must never affect the chat experience if it fails.
+      const agentType = turn.agent?.toLowerCase();
+      if (["admin", "instructor", "lecturer"].includes(agentType)) {
+        try {
+          await aiInteractionRepository.create({
+            studentId,
+            classId,
+            agentType,
+            message: content,
+            response: turn.message,
+            context: { mentionedAgent, pretestStatus, surface: "class_chat" },
+          });
+        } catch {
+          // Logging must never affect the chat experience.
+        }
+      }
     }
   } catch {
     // Best-effort — errors here must never surface to the student.

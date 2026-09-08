@@ -14,3 +14,10 @@ export async function getMyProgress(classId) {
   });
   return body.data;
 }
+
+export async function getStudentDetail(classId, studentId) {
+  const body = await apiRequest(`/classes/${classId}/progress/${studentId}`, {
+    auth: true,
+  });
+  return body.data;
+}

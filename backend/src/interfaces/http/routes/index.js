@@ -14,6 +14,7 @@ const aiRoutes = require("./ai.routes");
 const lecturerRoutes = require("./lecturer.routes");
 const questionsRoutes = require("./questions.routes");
 const studentRoutes = require("./student.routes");
+const insightsRoutes = require("./insights.routes");
 
 const router = Router();
 
@@ -31,5 +32,6 @@ router.use(aiRoutes);
 router.use(lecturerRoutes);
 router.use(questionsRoutes);
 router.use(studentRoutes);
+router.use(insightsRoutes);
 
 module.exports = router;

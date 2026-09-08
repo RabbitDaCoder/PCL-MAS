@@ -75,6 +75,27 @@ export async function clearClassMessages(classId) {
   });
 }
 
+export async function submitMessageFeedback(classId, messageId, { rating, note }) {
+  const body = await apiRequest(
+    `/classes/${classId}/messages/${messageId}/feedback`,
+    {
+      method: "POST",
+      payload: { rating, note },
+      auth: true,
+    },
+  );
+  return body.data;
+}
+
+export async function updateClassAiInstructions(classId, aiInstructions) {
+  const body = await apiRequest(`/classes/${classId}/ai-instructions`, {
+    method: "PATCH",
+    payload: { aiInstructions },
+    auth: true,
+  });
+  return body.data;
+}
+
 export async function getClassInvites() {
   const body = await apiRequest("/classes/invites", { auth: true });
   return body.data;

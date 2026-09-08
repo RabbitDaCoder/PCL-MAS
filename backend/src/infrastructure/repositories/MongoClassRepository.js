@@ -146,6 +146,18 @@ class MongoClassRepository extends ClassRepository {
       $inc: { studentCount: delta },
     });
   }
+
+  // Deliberately the only class field this repository lets anything write post-creation — a
+  // single-field $set (never a fetch-mutate-save) so this method can never carry other fields
+  // along with it, structurally reinforcing that aiInstructions is the one writable AI-config
+  // surface in the system.
+  async updateAiInstructions(classId, aiInstructions) {
+    return ClassModel.findByIdAndUpdate(
+      classId,
+      { $set: { aiInstructions } },
+      { new: true },
+    );
+  }
 }
 
 module.exports = MongoClassRepository;

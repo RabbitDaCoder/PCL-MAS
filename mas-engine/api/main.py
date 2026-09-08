@@ -2,7 +2,16 @@
 # FastAPI auto-generates OpenAPI/Swagger UI at /docs and ReDoc at /redoc.
 from fastapi import FastAPI
 
-from api.routers import assessments, health, learning_path, materials, onboarding, requests
+from api.routers import (
+    assessments,
+    health,
+    insights,
+    learning_path,
+    materials,
+    memory,
+    onboarding,
+    requests,
+)
 
 app = FastAPI(
     title="PCL-MAS AI Service",
@@ -18,3 +27,5 @@ app.include_router(assessments.router, prefix="/api")
 app.include_router(learning_path.router, prefix="/api")
 app.include_router(materials.router, prefix="/api")
 app.include_router(onboarding.router, prefix="/api")
+app.include_router(memory.router, prefix="/api")
+app.include_router(insights.router, prefix="/api")

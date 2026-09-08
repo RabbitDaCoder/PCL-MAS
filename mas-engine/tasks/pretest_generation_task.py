@@ -21,7 +21,10 @@ def build_test_generation_task(agent, assessment_type: str) -> Task:
         "empty or thin):\n{materials_text}\n\n"
         "The human lecturer's standing instructions for this class (follow these — they override "
         "your default judgment where they conflict, e.g. difficulty level, tone, question style, "
-        "topics to avoid):\n{lecturer_instructions}\n\n" + _QUESTION_SCHEMA_HINT
+        "topics to avoid):\n{lecturer_instructions}\n\n"
+        "Relevant things you remember about this student and class from past interactions (use "
+        "if helpful to calibrate difficulty or focus, ignore if not relevant):\n{memory_context}\n\n"
+        + _QUESTION_SCHEMA_HINT
     )
     return Task(
         description=description,

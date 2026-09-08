@@ -30,6 +30,9 @@ import LecturerClassMaterials from "../pages/lecturer/LecturerClassMaterials";
 import LecturerClassPretest from "../pages/lecturer/LecturerClassPretest";
 import LecturerClassProgress from "../pages/lecturer/LecturerClassProgress";
 import LecturerClassAssignments from "../pages/lecturer/LecturerClassAssignments";
+import LecturerClassSettings from "../pages/lecturer/LecturerClassSettings";
+import LecturerInsights from "../pages/lecturer/LecturerInsights";
+import LecturerStudentDetail from "../pages/lecturer/LecturerStudentDetail";
 import StudentManagement from "../pages/lecturer/StudentManagement";
 import QuestionReview from "../pages/lecturer/QuestionReview";
 import LecturerChat from "../pages/lecturer/LecturerChat";
@@ -150,8 +153,20 @@ export default function AppRoutes() {
             element={<LecturerClassProgress />}
           />
           <Route
+            path="/lecturer/classes/:classId/students/:studentId"
+            element={<LecturerStudentDetail />}
+          />
+          <Route
             path="/lecturer/classes/:classId/assignments"
             element={<LecturerClassAssignments />}
+          />
+          <Route
+            path="/lecturer/classes/:classId/settings"
+            element={<LecturerClassSettings />}
+          />
+          <Route
+            path="/lecturer/classes/:classId/insights"
+            element={<LecturerInsights />}
           />
           <Route path="/lecturer/questions" element={<QuestionReview />} />
           <Route path="/lecturer/chat" element={<LecturerChat />} />

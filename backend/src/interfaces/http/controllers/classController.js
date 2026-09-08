@@ -4,6 +4,7 @@ const MongoClassRepository = require("../../../infrastructure/repositories/Mongo
 const MongoMessageRepository = require("../../../infrastructure/repositories/MongoMessageRepository");
 const MongoAssessmentRepository = require("../../../infrastructure/repositories/MongoAssessmentRepository");
 const MongoMaterialRepository = require("../../../infrastructure/repositories/MongoMaterialRepository");
+const MongoAIInteractionRepository = require("../../../infrastructure/repositories/MongoAIInteractionRepository");
 const tokenService = require("../../../infrastructure/security/tokenService");
 const getMyClasses = require("../../../application/classes/getMyClasses");
 const createClass = require("../../../application/classes/createClass");
@@ -19,6 +20,8 @@ const triggerAdminAiReply = require("../../../application/classes/triggerAdminAi
 const getClassInvites = require("../../../application/classes/getClassInvites");
 const acceptClassInvite = require("../../../application/classes/acceptClassInvite");
 const joinClassByCode = require("../../../application/classes/joinClassByCode");
+const submitMessageFeedback = require("../../../application/classes/submitMessageFeedback");
+const updateClassAiInstructions = require("../../../application/classes/updateClassAiInstructions");
 const sendOnboardingDm = require("../../../application/directMessages/sendOnboardingDm");
 const MongoDirectMessageRepository = require("../../../infrastructure/repositories/MongoDirectMessageRepository");
 const {
@@ -35,6 +38,7 @@ const messageRepository = new MongoMessageRepository();
 const assessmentRepository = new MongoAssessmentRepository();
 const directMessageRepository = new MongoDirectMessageRepository();
 const materialRepository = new MongoMaterialRepository();
+const aiInteractionRepository = new MongoAIInteractionRepository();
 const deps = {
   userRepository,
   classRepository,
@@ -42,6 +46,7 @@ const deps = {
   assessmentRepository,
   directMessageRepository,
   materialRepository,
+  aiInteractionRepository,
   tokenService,
 };
 
@@ -217,6 +222,36 @@ async function handleClearClassMessages(req, res, next) {
   }
 }
 
+async function handleSubmitMessageFeedback(req, res, next) {
+  try {
+    const { rating, note } = req.body ?? {};
+    const result = await submitMessageFeedback(deps, {
+      classId: req.params.classId,
+      messageId: req.params.messageId,
+      studentId: req.user.id,
+      rating,
+      note,
+    });
+    res.json(success(result, "Feedback recorded"));
+  } catch (err) {
+    next(err);
+  }
+}
+
+async function handleUpdateClassAiInstructions(req, res, next) {
+  try {
+    const { aiInstructions } = req.body ?? {};
+    const result = await updateClassAiInstructions(deps, {
+      classId: req.params.classId,
+      lecturerId: req.user.id,
+      aiInstructions,
+    });
+    res.json(success(result, "AI instructions updated"));
+  } catch (err) {
+    next(err);
+  }
+}
+
 async function handleGetClassInvites(req, res, next) {
   try {
     const result = await getClassInvites(deps, { studentId: req.user.id });
@@ -281,6 +316,8 @@ module.exports = {
   handleGetClassMessages,
   handleSendClassMessage,
   handleClearClassMessages,
+  handleSubmitMessageFeedback,
+  handleUpdateClassAiInstructions,
   handleGetClassInvites,
   handleAcceptClassInvite,
   handleJoinClass,

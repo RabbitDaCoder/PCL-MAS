@@ -8,7 +8,7 @@ const {
 const { runLearningPathGeneration } = require("./generateLearningPath");
 
 async function getLearningPath(
-  { classRepository, learningProfileRepository, assessmentRepository },
+  { classRepository, learningProfileRepository, assessmentRepository, aiInteractionRepository },
   { classId, userId, role, studentId },
 ) {
   await assertClassAccess(classRepository, classId, userId, role);
@@ -26,7 +26,7 @@ async function getLearningPath(
   if (!profile || !profile.learningPathSteps?.length) {
     if (role === "student") {
       const generated = await runLearningPathGeneration(
-        { classRepository, assessmentRepository, learningProfileRepository },
+        { classRepository, assessmentRepository, learningProfileRepository, aiInteractionRepository },
         { classId, studentId: targetStudentId },
       );
       profile = await learningProfileRepository.findOne(targetStudentId, classId);

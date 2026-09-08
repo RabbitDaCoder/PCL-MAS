@@ -15,3 +15,15 @@ export async function sendDmMessage(classId, content) {
   });
   return body.data;
 }
+
+export async function submitDmMessageFeedback(classId, messageId, { rating, note }) {
+  const body = await apiRequest(
+    `/classes/${classId}/dm/${messageId}/feedback`,
+    {
+      method: "POST",
+      payload: { rating, note },
+      auth: true,
+    },
+  );
+  return body.data;
+}

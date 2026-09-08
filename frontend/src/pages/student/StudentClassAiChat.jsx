@@ -6,7 +6,7 @@
 // system message or a human lecturer.
 import { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { ArrowLeft, Bot, Send, Sparkles } from "lucide-react";
+import { ArrowLeft, Bot, Send, Sparkles, ThumbsUp, ThumbsDown } from "lucide-react";
 import Skeleton from "../../components/ui/Skeleton";
 import Button from "../../components/ui/Button";
 import { useToast } from "../../context/ToastContext";
@@ -14,6 +14,7 @@ import { getSocket } from "../../services/socket";
 import {
   getDmThread,
   sendDmMessage,
+  submitDmMessageFeedback,
 } from "../../services/directMessageService";
 import { getAssessment } from "../../services/assessmentService";
 
@@ -142,6 +143,29 @@ export default function StudentClassAiChat() {
     }
   }
 
+  async function handleFeedback(messageId, rating) {
+    const nextRating =
+      messages.find((message) => message.id === messageId)?.feedback
+        ?.rating === rating
+        ? null
+        : rating;
+
+    setMessages((prev) =>
+      prev.map((message) =>
+        message.id === messageId
+          ? { ...message, feedback: { ...message.feedback, rating: nextRating } }
+          : message,
+      ),
+    );
+    if (nextRating === null) return; // toggling off is local-only — nothing to send
+
+    try {
+      await submitDmMessageFeedback(classId, messageId, { rating: nextRating });
+    } catch (error) {
+      showToast(error.message || "Couldn't record your feedback.");
+    }
+  }
+
   return (
     <div className="flex flex-1 flex-col sm:overflow-hidden">
       <div className="flex items-center justify-between gap-3 border-b border-[var(--color-border)] px-4 py-4 sm:px-6">
@@ -216,9 +240,39 @@ export default function StudentClassAiChat() {
                       {message.content}
                     </div>
                   </div>
-                  <span className="px-1 text-[10px] text-[var(--color-text-secondary)]">
-                    {formatMessageTime(message.createdAt)}
-                  </span>
+                  <div className="flex items-center gap-2 px-1">
+                    <span className="text-[10px] text-[var(--color-text-secondary)]">
+                      {formatMessageTime(message.createdAt)}
+                    </span>
+                    {isAi ? (
+                      <span className="flex items-center gap-1">
+                        <button
+                          type="button"
+                          onClick={() => handleFeedback(message.id, "up")}
+                          aria-label="Good response"
+                          className={`rounded p-0.5 transition-colors hover:text-[var(--color-accent)] ${
+                            message.feedback?.rating === "up"
+                              ? "text-[var(--color-accent)]"
+                              : "text-[var(--color-text-secondary)]"
+                          }`}
+                        >
+                          <ThumbsUp className="h-3 w-3" />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleFeedback(message.id, "down")}
+                          aria-label="Poor response"
+                          className={`rounded p-0.5 transition-colors hover:text-[var(--color-accent)] ${
+                            message.feedback?.rating === "down"
+                              ? "text-[var(--color-accent)]"
+                              : "text-[var(--color-text-secondary)]"
+                          }`}
+                        >
+                          <ThumbsDown className="h-3 w-3" />
+                        </button>
+                      </span>
+                    ) : null}
+                  </div>
                 </div>
               );
             })}

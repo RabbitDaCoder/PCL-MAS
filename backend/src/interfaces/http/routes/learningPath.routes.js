@@ -88,6 +88,9 @@ router.get(
  *             properties:
  *               studentId: { type: string }
  *               decision: { type: string, enum: [approve, reject] }
+ *               feedback:
+ *                 type: string
+ *                 description: Optional free-text reason for the decision, stored on the profile.
  *     responses:
  *       200:
  *         description: Learning path reviewed

@@ -26,6 +26,24 @@ class MongoMessageRepository extends MessageRepository {
     return { messages: messages.reverse(), total };
   }
 
+  // Scoped by classId + senderType "ai" in the query itself, so a student can't stamp feedback
+  // onto another class's message, or onto a human-authored message, by guessing an id.
+  async setFeedback(messageId, classId, feedback) {
+    return MessageModel.findOneAndUpdate(
+      { _id: messageId, classId, senderType: "ai" },
+      { $set: { feedback } },
+      { new: true },
+    );
+  }
+
+  // AI-authored messages that have been rated, for the insights evaluation pipeline — a small
+  // class dataset, so a plain find + JS reduce is used rather than an aggregation pipeline.
+  async findFeedbackByClass(classId) {
+    return MessageModel.find({ classId, senderType: "ai", feedback: { $exists: true } }).select(
+      "aiAgent content feedback",
+    );
+  }
+
   // Per-student message counts + last-sent timestamp, for the class Progress view.
   async getStudentEngagementByClass(classId) {
     return MessageModel.aggregate([

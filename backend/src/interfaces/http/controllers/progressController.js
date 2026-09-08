@@ -6,9 +6,11 @@ const MongoQuestionRepository = require("../../../infrastructure/repositories/Mo
 const MongoLearningProfileRepository = require("../../../infrastructure/repositories/MongoLearningProfileRepository");
 const MongoAssessmentRepository = require("../../../infrastructure/repositories/MongoAssessmentRepository");
 const MongoAssignmentRepository = require("../../../infrastructure/repositories/MongoAssignmentRepository");
+const MongoAIInteractionRepository = require("../../../infrastructure/repositories/MongoAIInteractionRepository");
 const tokenService = require("../../../infrastructure/security/tokenService");
 const getClassProgress = require("../../../application/progress/getClassProgress");
 const getMyProgress = require("../../../application/progress/getMyProgress");
+const getStudentDetail = require("../../../application/progress/getStudentDetail");
 const AppError = require("../../../domain/errors/AppError");
 const { success } = require("../../../utils/apiResponse");
 
@@ -19,6 +21,7 @@ const questionRepository = new MongoQuestionRepository();
 const learningProfileRepository = new MongoLearningProfileRepository();
 const assessmentRepository = new MongoAssessmentRepository();
 const assignmentRepository = new MongoAssignmentRepository();
+const aiInteractionRepository = new MongoAIInteractionRepository();
 const deps = {
   userRepository,
   classRepository,
@@ -27,6 +30,7 @@ const deps = {
   learningProfileRepository,
   assessmentRepository,
   assignmentRepository,
+  aiInteractionRepository,
   tokenService,
 };
 
@@ -57,4 +61,22 @@ async function handleGetMyProgress(req, res, next) {
   }
 }
 
-module.exports = { deps, handleGetClassProgress, handleGetMyProgress };
+async function handleGetStudentDetail(req, res, next) {
+  try {
+    const result = await getStudentDetail(deps, {
+      classId: req.params.classId,
+      lecturerId: req.user.id,
+      studentId: req.params.studentId,
+    });
+    res.json(success(result, "Student detail retrieved"));
+  } catch (err) {
+    next(err);
+  }
+}
+
+module.exports = {
+  deps,
+  handleGetClassProgress,
+  handleGetMyProgress,
+  handleGetStudentDetail,
+};

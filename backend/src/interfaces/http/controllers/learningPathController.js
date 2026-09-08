@@ -3,21 +3,25 @@ const MongoUserRepository = require("../../../infrastructure/repositories/MongoU
 const MongoClassRepository = require("../../../infrastructure/repositories/MongoClassRepository");
 const MongoAssessmentRepository = require("../../../infrastructure/repositories/MongoAssessmentRepository");
 const MongoLearningProfileRepository = require("../../../infrastructure/repositories/MongoLearningProfileRepository");
+const MongoAIInteractionRepository = require("../../../infrastructure/repositories/MongoAIInteractionRepository");
 const tokenService = require("../../../infrastructure/security/tokenService");
 const generateLearningPath = require("../../../application/learningPath/generateLearningPath");
 const getLearningPath = require("../../../application/learningPath/getLearningPath");
 const reviewLearningPath = require("../../../application/learningPath/reviewLearningPath");
+const rememberLecturerFeedback = require("../../../application/shared/rememberLecturerFeedback");
 const { success } = require("../../../utils/apiResponse");
 
 const userRepository = new MongoUserRepository();
 const classRepository = new MongoClassRepository();
 const assessmentRepository = new MongoAssessmentRepository();
 const learningProfileRepository = new MongoLearningProfileRepository();
+const aiInteractionRepository = new MongoAIInteractionRepository();
 const deps = {
   userRepository,
   classRepository,
   assessmentRepository,
   learningProfileRepository,
+  aiInteractionRepository,
   tokenService,
 };
 
@@ -54,8 +58,10 @@ async function handleReviewLearningPath(req, res, next) {
       lecturerId: req.user.id,
       studentId: req.body.studentId,
       decision: req.body.decision,
+      feedback: req.body.feedback,
     });
     res.json(success(result, "Learning path reviewed"));
+    rememberLecturerFeedback(req.params.classId, req.body.feedback);
   } catch (err) {
     next(err);
   }

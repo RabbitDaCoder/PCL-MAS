@@ -83,6 +83,14 @@ class MongoUserRepository extends UserRepository {
   async updateProfile(userId, updates) {
     return UserModel.findByIdAndUpdate(userId, updates, { new: true });
   }
+
+  // Login-frequency analytics — a real, timestamped signal for the learning-analytics audit.
+  async recordLogin(userId) {
+    await UserModel.findByIdAndUpdate(userId, {
+      $set: { lastLoginAt: new Date() },
+      $inc: { loginCount: 1 },
+    });
+  }
 }
 
 module.exports = MongoUserRepository;

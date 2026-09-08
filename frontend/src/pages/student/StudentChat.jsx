@@ -5,7 +5,7 @@
 // sidebar without a page refresh.
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import { Send, MessageCircle, Trash2 } from "lucide-react";
+import { Send, MessageCircle, Trash2, ThumbsUp, ThumbsDown } from "lucide-react";
 import Skeleton from "../../components/ui/Skeleton";
 import { useAuth } from "../../context/AuthContext";
 import { useToast } from "../../context/ToastContext";
@@ -15,6 +15,7 @@ import {
   getClassMessages,
   sendClassMessage,
   clearClassMessages,
+  submitMessageFeedback,
 } from "../../services/classService";
 
 function mergeUniqueMessages(previous, incoming) {
@@ -219,6 +220,32 @@ export default function StudentChat() {
     }
   }
 
+  async function handleFeedback(messageId, rating) {
+    if (!selectedClassId) return;
+    const nextRating =
+      messages.find((message) => message.id === messageId)?.feedback
+        ?.rating === rating
+        ? null
+        : rating;
+
+    setMessages((prev) =>
+      prev.map((message) =>
+        message.id === messageId
+          ? { ...message, feedback: { ...message.feedback, rating: nextRating } }
+          : message,
+      ),
+    );
+    if (nextRating === null) return; // toggling off is local-only — nothing to send
+
+    try {
+      await submitMessageFeedback(selectedClassId, messageId, {
+        rating: nextRating,
+      });
+    } catch (error) {
+      showToast(error.message || "Couldn't record your feedback.");
+    }
+  }
+
   return (
     <div className="flex flex-1 flex-col sm:flex-row sm:overflow-hidden">
       <aside className="flex flex-col gap-1 border-b border-[var(--color-border)] px-4 py-4 sm:w-72 sm:border-b-0 sm:border-r sm:overflow-y-auto sm:px-4">
@@ -297,6 +324,7 @@ export default function StudentChat() {
                 <>
                   {messages.map((message) => {
                     const isOwn = message.senderId === user?.id;
+                    const isAi = message.senderRole === "ai";
                     return (
                       <div
                         key={message.id}
@@ -318,9 +346,39 @@ export default function StudentChat() {
                             {message.content}
                           </div>
                         </div>
-                        <span className="mt-1 px-1 text-[10px] text-[var(--color-text-secondary)]">
-                          {formatMessageTime(message.createdAt)}
-                        </span>
+                        <div className="mt-1 flex items-center gap-2 px-1">
+                          <span className="text-[10px] text-[var(--color-text-secondary)]">
+                            {formatMessageTime(message.createdAt)}
+                          </span>
+                          {isAi ? (
+                            <span className="flex items-center gap-1">
+                              <button
+                                type="button"
+                                onClick={() => handleFeedback(message.id, "up")}
+                                aria-label="Good response"
+                                className={`rounded p-0.5 transition-colors hover:text-[var(--color-accent)] ${
+                                  message.feedback?.rating === "up"
+                                    ? "text-[var(--color-accent)]"
+                                    : "text-[var(--color-text-secondary)]"
+                                }`}
+                              >
+                                <ThumbsUp className="h-3 w-3" />
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => handleFeedback(message.id, "down")}
+                                aria-label="Poor response"
+                                className={`rounded p-0.5 transition-colors hover:text-[var(--color-accent)] ${
+                                  message.feedback?.rating === "down"
+                                    ? "text-[var(--color-accent)]"
+                                    : "text-[var(--color-text-secondary)]"
+                                }`}
+                              >
+                                <ThumbsDown className="h-3 w-3" />
+                              </button>
+                            </span>
+                          ) : null}
+                        </div>
                       </div>
                     );
                   })}

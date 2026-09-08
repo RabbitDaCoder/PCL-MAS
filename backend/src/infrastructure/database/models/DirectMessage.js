@@ -21,6 +21,12 @@ const directMessageSchema = new Schema(
       enum: ["Admin", "Instructor", "Lecturer", "System"],
     },
     content: { type: String, required: true },
+    // Student thumbs up/down on an AI-authored message — only ever set on senderType "ai" rows.
+    feedback: {
+      rating: { type: String, enum: ["up", "down"] },
+      note: { type: String, trim: true },
+      createdAt: { type: Date },
+    },
   },
   { timestamps: true },
 );

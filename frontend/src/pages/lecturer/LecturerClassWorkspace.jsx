@@ -11,6 +11,8 @@ import {
   ClipboardList,
   ClipboardCheck,
   ListChecks,
+  Settings,
+  Lightbulb,
 } from "lucide-react";
 import Skeleton from "../../components/ui/Skeleton";
 import { useToast } from "../../context/ToastContext";
@@ -79,6 +81,22 @@ const SECTIONS = [
     icon: ListChecks,
     description: "Create tasks and grade student submissions.",
     to: (classId) => `/lecturer/classes/${classId}/assignments`,
+    available: true,
+  },
+  {
+    key: "settings",
+    label: "AI Settings",
+    icon: Settings,
+    description: "Edit standing instructions for this class's AI agents.",
+    to: (classId) => `/lecturer/classes/${classId}/settings`,
+    available: true,
+  },
+  {
+    key: "insights",
+    label: "Insights",
+    icon: Lightbulb,
+    description: "AI-generated suggestions from accumulated feedback, for you to review.",
+    to: (classId) => `/lecturer/classes/${classId}/insights`,
     available: true,
   },
 ];

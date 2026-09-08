@@ -39,6 +39,10 @@ class UserRepository {
   async updateProfile(_userId, _updates) {
     throw new Error("Not implemented");
   }
+
+  async recordLogin(_userId) {
+    throw new Error("Not implemented");
+  }
 }
 
 module.exports = UserRepository;

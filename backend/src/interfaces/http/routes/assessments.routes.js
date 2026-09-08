@@ -117,6 +117,46 @@ router.post(
   controller.handleSubmitAssessment,
 );
 
+/**
+ * @openapi
+ * /classes/{classId}/assessments/{type}/review:
+ *   post:
+ *     tags: [Assessments]
+ *     summary: Approve or reject a drafted pre-test/post-test (lecturer-only) — approving may include edited questions
+ *     security: [{ bearerAuth: [] }]
+ *     parameters:
+ *       - in: path
+ *         name: classId
+ *         required: true
+ *         schema: { type: string }
+ *       - in: path
+ *         name: type
+ *         required: true
+ *         schema: { type: string, enum: [pre-test, post-test] }
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [decision]
+ *             properties:
+ *               decision: { type: string, enum: [approve, reject] }
+ *               questions:
+ *                 type: array
+ *                 description: Optional edited question set, applied only when approving.
+ *               feedback:
+ *                 type: string
+ *                 description: Optional free-text reason for the decision, stored on the assessment.
+ *     responses:
+ *       200:
+ *         description: Assessment review updated
+ *         content:
+ *           application/json:
+ *             schema: { $ref: "#/components/schemas/SuccessResponse" }
+ *       404:
+ *         description: This assessment hasn't been generated yet
+ */
 router.post(
   "/classes/:classId/assessments/:type/review",
   authenticate,

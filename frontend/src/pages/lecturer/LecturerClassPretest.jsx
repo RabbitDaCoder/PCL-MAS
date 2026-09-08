@@ -25,6 +25,7 @@ export default function LecturerClassPretest() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [draftQuestions, setDraftQuestions] = useState([]);
   const [isReviewing, setIsReviewing] = useState(false);
+  const [reviewFeedback, setReviewFeedback] = useState("");
 
   function loadAssessment() {
     return getAssessment(classId, type).then((data) => {
@@ -119,12 +120,14 @@ export default function LecturerClassPretest() {
           options: question.options,
           correctAnswer: question.correctAnswer,
         })),
+        reviewFeedback,
       );
       showToast(
         decision === "approve"
           ? `${label} approved and released to students.`
           : `${label} rejected and sent back for regeneration.`,
       );
+      setReviewFeedback("");
       await loadAssessment();
     } catch (error) {
       showToast(error.message || `Couldn't review the ${label.toLowerCase()}.`);
@@ -246,7 +249,20 @@ export default function LecturerClassPretest() {
             ))}
           </div>
 
-          <div className="mt-6 flex flex-wrap gap-3">
+          <div className="mt-6 flex flex-col gap-1.5">
+            <label className="text-xs font-medium text-[var(--color-text-secondary)]">
+              Feedback (optional)
+            </label>
+            <textarea
+              value={reviewFeedback}
+              onChange={(event) => setReviewFeedback(event.target.value)}
+              rows={2}
+              placeholder="Why you approved/rejected this — helps track how the AI agents are doing over time."
+              className="w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2 text-sm text-[var(--color-text)] outline-none focus:border-[var(--color-accent)]"
+            />
+          </div>
+
+          <div className="mt-3 flex flex-wrap gap-3">
             <Button
               onClick={() => handleReview("approve")}
               disabled={isReviewing}

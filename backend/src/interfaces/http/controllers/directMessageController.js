@@ -5,10 +5,12 @@ const MongoClassRepository = require("../../../infrastructure/repositories/Mongo
 const MongoAssessmentRepository = require("../../../infrastructure/repositories/MongoAssessmentRepository");
 const MongoDirectMessageRepository = require("../../../infrastructure/repositories/MongoDirectMessageRepository");
 const MongoMaterialRepository = require("../../../infrastructure/repositories/MongoMaterialRepository");
+const MongoAIInteractionRepository = require("../../../infrastructure/repositories/MongoAIInteractionRepository");
 const tokenService = require("../../../infrastructure/security/tokenService");
 const getDmThread = require("../../../application/directMessages/getDmThread");
 const sendDmMessage = require("../../../application/directMessages/sendDmMessage");
 const triggerAdminAiDmReply = require("../../../application/directMessages/triggerAdminAiDmReply");
+const submitDmMessageFeedback = require("../../../application/directMessages/submitDmMessageFeedback");
 const {
   emitDmMessage,
   emitNotification,
@@ -20,12 +22,14 @@ const classRepository = new MongoClassRepository();
 const assessmentRepository = new MongoAssessmentRepository();
 const directMessageRepository = new MongoDirectMessageRepository();
 const materialRepository = new MongoMaterialRepository();
+const aiInteractionRepository = new MongoAIInteractionRepository();
 const deps = {
   userRepository,
   classRepository,
   assessmentRepository,
   directMessageRepository,
   materialRepository,
+  aiInteractionRepository,
   tokenService,
 };
 
@@ -60,8 +64,25 @@ async function handleSendDmMessage(req, res, next) {
   }
 }
 
+async function handleSubmitDmMessageFeedback(req, res, next) {
+  try {
+    const { rating, note } = req.body ?? {};
+    const result = await submitDmMessageFeedback(deps, {
+      classId: req.params.classId,
+      messageId: req.params.messageId,
+      studentId: req.user.id,
+      rating,
+      note,
+    });
+    res.json(success(result, "Feedback recorded"));
+  } catch (err) {
+    next(err);
+  }
+}
+
 module.exports = {
   deps,
   handleGetDmThread,
   handleSendDmMessage,
+  handleSubmitDmMessageFeedback,
 };

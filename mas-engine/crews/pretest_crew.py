@@ -36,6 +36,7 @@ def generate_assessment_questions(
     learning_objectives: list[str],
     materials_text: str,
     lecturer_instructions: str = "",
+    memory_context: str = "",
     question_count: int = _DEFAULT_QUESTION_COUNT,
 ) -> list[AssessmentQuestion]:
     config = get_agent_llm_config("lecturer")
@@ -47,6 +48,7 @@ def generate_assessment_questions(
         "learning_objectives": ", ".join(learning_objectives) or "Not specified",
         "materials_text": materials_text or "(no materials uploaded yet)",
         "lecturer_instructions": lecturer_instructions or "(none given)",
+        "memory_context": memory_context or "(nothing remembered yet)",
         "question_count": question_count,
     }
 

@@ -416,6 +416,89 @@ router.delete(
 
 /**
  * @openapi
+ * /classes/{classId}/messages/{messageId}/feedback:
+ *   post:
+ *     tags: [Classes]
+ *     summary: Student rates an AI-authored class-chat message (thumbs up/down + optional note)
+ *     security: [{ bearerAuth: [] }]
+ *     parameters:
+ *       - in: path
+ *         name: classId
+ *         required: true
+ *         schema: { type: string }
+ *       - in: path
+ *         name: messageId
+ *         required: true
+ *         schema: { type: string }
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [rating]
+ *             properties:
+ *               rating: { type: string, enum: [up, down] }
+ *               note: { type: string }
+ *     responses:
+ *       200:
+ *         description: Feedback recorded
+ *         content:
+ *           application/json:
+ *             schema: { $ref: "#/components/schemas/SuccessResponse" }
+ *       403:
+ *         description: No access to this class
+ *       404:
+ *         description: Message not found, or not an AI-authored message
+ */
+router.post(
+  "/classes/:classId/messages/:messageId/feedback",
+  authenticate,
+  requireRole("student"),
+  controller.handleSubmitMessageFeedback,
+);
+
+/**
+ * @openapi
+ * /classes/{classId}/ai-instructions:
+ *   patch:
+ *     tags: [Classes]
+ *     summary: Lecturer edits the private standing instructions for this class's AI agents (owner-only)
+ *     security: [{ bearerAuth: [] }]
+ *     parameters:
+ *       - in: path
+ *         name: classId
+ *         required: true
+ *         schema: { type: string }
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [aiInstructions]
+ *             properties:
+ *               aiInstructions: { type: string }
+ *     responses:
+ *       200:
+ *         description: AI instructions updated
+ *         content:
+ *           application/json:
+ *             schema: { $ref: "#/components/schemas/SuccessResponse" }
+ *       403:
+ *         description: Not this class's lecturer
+ *       404:
+ *         description: Class not found
+ */
+router.patch(
+  "/classes/:classId/ai-instructions",
+  authenticate,
+  requireRole("lecturer"),
+  controller.handleUpdateClassAiInstructions,
+);
+
+/**
+ * @openapi
  * /classes/{classId}/questions/seed-test:
  *   post:
  *     tags: [Classes]

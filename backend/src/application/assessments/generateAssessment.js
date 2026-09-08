@@ -52,7 +52,7 @@ async function generateQuestionsForStudent(requestBody) {
 }
 
 async function generateAssessment(
-  { classRepository, materialRepository, assessmentRepository },
+  { classRepository, materialRepository, assessmentRepository, aiInteractionRepository },
   { classId, lecturerId, type },
 ) {
   const dbType = TYPE_MAP[type];
@@ -98,13 +98,14 @@ async function generateAssessment(
     .filter((material) => material.extractionStatus !== "completed")
     .map((material) => material.fileUrl);
 
-  const requestBody = {
+  const baseRequestBody = {
     assessmentType: type,
     topics: classDoc.topics ?? [],
     learningObjectives: classDoc.learningObjectives ?? [],
     materialUrls,
     materialsText,
     lecturerInstructions: classDoc.aiInstructions ?? "",
+    classId,
     questionCount: 8,
   };
 
@@ -113,7 +114,12 @@ async function generateAssessment(
   let perStudentQuestions;
   try {
     perStudentQuestions = await Promise.all(
-      activeStudentIds.map(() => generateQuestionsForStudent(requestBody)),
+      activeStudentIds.map((studentId) =>
+        generateQuestionsForStudent({
+          ...baseRequestBody,
+          studentId: studentId.toString(),
+        }),
+      ),
     );
   } catch (err) {
     if (err instanceof AppError) throw err;
@@ -122,6 +128,20 @@ async function generateAssessment(
       502,
     );
   }
+
+  // Best-effort interaction log, one per student — never blocks the response.
+  activeStudentIds.forEach((studentId, index) => {
+    aiInteractionRepository
+      .create({
+        studentId,
+        classId,
+        agentType: "instructor",
+        message: `Generate ${type} (${baseRequestBody.questionCount} questions) for topics: ${baseRequestBody.topics.join(", ") || "none"}`,
+        response: JSON.stringify(perStudentQuestions[index]),
+        context: { assessmentType: type },
+      })
+      .catch(() => {});
+  });
 
   const assessmentDocs = activeStudentIds.map((studentId, index) => ({
     classId,

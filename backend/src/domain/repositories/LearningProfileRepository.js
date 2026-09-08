@@ -11,6 +11,10 @@ class LearningProfileRepository {
   async upsert(_studentId, _classId, _fields) {
     throw new Error("Not implemented");
   }
+
+  async upsertWithHistory(_studentId, _classId, _fields) {
+    throw new Error("Not implemented");
+  }
 }
 
 module.exports = LearningProfileRepository;

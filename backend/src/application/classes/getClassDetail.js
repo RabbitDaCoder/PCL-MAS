@@ -18,6 +18,8 @@ async function getClassDetail({ classRepository }, { classId, userId, role }) {
     status: classDoc.status,
     classCode: classDoc.classCode,
     createdAt: classDoc.createdAt,
+    // Private lecturer-only field — never exposed to a student's view of this same endpoint.
+    ...(role === "lecturer" ? { aiInstructions: classDoc.aiInstructions ?? "" } : {}),
   };
 }
 

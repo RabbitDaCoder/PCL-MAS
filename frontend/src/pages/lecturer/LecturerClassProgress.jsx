@@ -25,6 +25,7 @@ export default function LecturerClassProgress() {
   const [entries, setEntries] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [reviewingId, setReviewingId] = useState(null);
+  const [feedbackByStudent, setFeedbackByStudent] = useState({});
 
   function loadEntries() {
     return getClassProgress(classId).then((data) => setEntries(data));
@@ -50,13 +51,18 @@ export default function LecturerClassProgress() {
   async function handleReview(studentId, decision) {
     setReviewingId(studentId);
     try {
-      await reviewLearningPath(classId, { studentId, decision });
+      await reviewLearningPath(classId, {
+        studentId,
+        decision,
+        feedback: feedbackByStudent[studentId],
+      });
       showToast(
         decision === "approve"
           ? "Learning path approved — the student can now see it."
           : "Rejected — a new learning path is being generated.",
         "success",
       );
+      setFeedbackByStudent((prev) => ({ ...prev, [studentId]: "" }));
       await loadEntries();
     } catch (error) {
       showToast(error.message || "Couldn't review that learning path.");
@@ -96,12 +102,25 @@ export default function LecturerClassProgress() {
               className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] p-5"
             >
               <div className="flex flex-wrap items-center justify-between gap-2">
-                <p className="font-medium text-[var(--color-text)]">
-                  {entry.firstName} {entry.lastName}
-                </p>
-                <p className="text-xs text-[var(--color-text-secondary)]">
-                  {entry.email}
-                </p>
+                <div>
+                  <p className="font-medium text-[var(--color-text)]">
+                    {entry.firstName} {entry.lastName}
+                  </p>
+                  <p className="text-xs text-[var(--color-text-secondary)]">
+                    {entry.email}
+                  </p>
+                </div>
+                <Button
+                  variant="secondary"
+                  className="!h-8 !px-3 !text-xs"
+                  onClick={() =>
+                    navigate(
+                      `/lecturer/classes/${classId}/students/${entry.studentId}`,
+                    )
+                  }
+                >
+                  View full profile
+                </Button>
               </div>
               <div className="mt-3 grid grid-cols-2 gap-x-4 gap-y-1 text-sm text-[var(--color-text-secondary)] sm:grid-cols-4">
                 <p>Messages: {entry.messageCount}</p>
@@ -153,38 +172,62 @@ export default function LecturerClassProgress() {
                       {entry.learningProfile.progressSummary}
                     </p>
                   ) : null}
+                  {entry.learningProfile.strengths?.length ? (
+                    <p className="mt-1 text-[var(--color-text-secondary)]">
+                      Strengths: {entry.learningProfile.strengths.join(", ")}
+                    </p>
+                  ) : null}
                   {entry.learningProfile.weaknesses?.length ? (
                     <p className="mt-1 text-[var(--color-text-secondary)]">
                       Weak topics: {entry.learningProfile.weaknesses.join(", ")}
                     </p>
                   ) : null}
+                  {entry.learningProfile.recommendedTopics?.length ? (
+                    <p className="mt-1 text-[var(--color-text-secondary)]">
+                      Recommended topics:{" "}
+                      {entry.learningProfile.recommendedTopics.join(", ")}
+                    </p>
+                  ) : null}
                   {entry.learningProfile.learningPathSteps?.length ? (
                     <div className="mt-2 flex items-center gap-2">
                       {entry.learningProfile.reviewStatus === "pending" ? (
-                        <>
-                          <span className="rounded-full border border-[var(--color-accent)] px-2 py-0.5 text-xs font-medium text-[var(--color-accent)]">
+                        <div className="flex w-full flex-col gap-2">
+                          <span className="w-fit rounded-full border border-[var(--color-accent)] px-2 py-0.5 text-xs font-medium text-[var(--color-accent)]">
                             AI learning path awaiting review
                           </span>
-                          <Button
-                            className="!h-8 !px-3 !text-xs"
-                            isLoading={reviewingId === entry.studentId}
-                            onClick={() =>
-                              handleReview(entry.studentId, "approve")
+                          <input
+                            value={feedbackByStudent[entry.studentId] ?? ""}
+                            onChange={(event) =>
+                              setFeedbackByStudent((prev) => ({
+                                ...prev,
+                                [entry.studentId]: event.target.value,
+                              }))
                             }
-                          >
-                            Approve
-                          </Button>
-                          <Button
-                            variant="secondary"
-                            className="!h-8 !px-3 !text-xs"
-                            isLoading={reviewingId === entry.studentId}
-                            onClick={() =>
-                              handleReview(entry.studentId, "reject")
-                            }
-                          >
-                            Reject &amp; regenerate
-                          </Button>
-                        </>
+                            placeholder="Feedback (optional)"
+                            className="w-full max-w-sm rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] px-2.5 py-1.5 text-xs text-[var(--color-text)] outline-none focus:border-[var(--color-accent)]"
+                          />
+                          <div className="flex items-center gap-2">
+                            <Button
+                              className="!h-8 !px-3 !text-xs"
+                              isLoading={reviewingId === entry.studentId}
+                              onClick={() =>
+                                handleReview(entry.studentId, "approve")
+                              }
+                            >
+                              Approve
+                            </Button>
+                            <Button
+                              variant="secondary"
+                              className="!h-8 !px-3 !text-xs"
+                              isLoading={reviewingId === entry.studentId}
+                              onClick={() =>
+                                handleReview(entry.studentId, "reject")
+                              }
+                            >
+                              Reject &amp; regenerate
+                            </Button>
+                          </div>
+                        </div>
                       ) : entry.learningProfile.reviewStatus === "approved" ? (
                         <span className="rounded-full border border-[var(--color-border)] px-2 py-0.5 text-xs font-medium text-[var(--color-text-secondary)]">
                           Learning path approved

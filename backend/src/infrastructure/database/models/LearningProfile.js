@@ -10,6 +10,22 @@ const learningPathStepSchema = new Schema(
   { _id: false },
 );
 
+// A snapshot of the profile's prior state, captured just before it's overwritten by a
+// regeneration — see MongoLearningProfileRepository.upsertWithHistory. Without this, every
+// reject-and-regenerate or student-initiated regenerate silently destroyed the previous version.
+const learningProfileHistoryEntrySchema = new Schema(
+  {
+    steps: [learningPathStepSchema],
+    summary: { type: String, trim: true },
+    weaknesses: [{ type: String }],
+    knowledgeGaps: [{ type: String }],
+    reviewStatus: { type: String, enum: ["pending", "approved", "rejected"] },
+    reviewedBy: { type: Types.ObjectId, ref: "User" },
+    replacedAt: { type: Date, default: Date.now },
+  },
+  { _id: false },
+);
+
 const learningProfileSchema = new Schema(
   {
     studentId: { type: Types.ObjectId, ref: "User", required: true },
@@ -18,6 +34,9 @@ const learningProfileSchema = new Schema(
     weaknesses: [{ type: String }],
     knowledgeGaps: [{ type: String }],
     learningPace: { type: String },
+    // Intentionally never populated: nothing in this system observes how a student prefers to
+    // learn (no content-format tracking, no learning-style survey). Left in the schema rather
+    // than removed, but no write path sets it — populating it would mean fabricating data.
     preferredLearningMethods: [{ type: String }],
     recommendedTopics: [{ type: String }],
     learningPathSteps: [learningPathStepSchema],
@@ -30,6 +49,8 @@ const learningProfileSchema = new Schema(
     },
     reviewedAt: { type: Date },
     reviewedBy: { type: Types.ObjectId, ref: "User" },
+    reviewFeedback: { type: String, trim: true },
+    history: [learningProfileHistoryEntrySchema],
   },
   { timestamps: true },
 );

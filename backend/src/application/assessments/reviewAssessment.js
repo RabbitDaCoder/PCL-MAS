@@ -29,7 +29,7 @@ function normalizeQuestions(questions) {
 
 async function reviewAssessment(
   { classRepository, assessmentRepository },
-  { classId, lecturerId, type, decision, questions },
+  { classId, lecturerId, type, decision, questions, feedback },
 ) {
   const dbType = TYPE_MAP[type];
   if (!dbType) throw new AppError("Invalid assessment type.", 400);
@@ -52,6 +52,8 @@ async function reviewAssessment(
   // Captured before mutation, so a lecturer re-approving an already-approved assessment (e.g.
   // after a later edit) doesn't re-trigger the release announcement.
   const wasAlreadyApproved = assessments[0].reviewStatus === "approved";
+  const trimmedFeedback =
+    typeof feedback === "string" ? feedback.trim().slice(0, 2000) : undefined;
 
   for (const assessment of assessments) {
     if (decision === "approve") {
@@ -66,6 +68,9 @@ async function reviewAssessment(
       assessment.reviewStatus = "rejected";
       assessment.approvedBy = null;
       assessment.reviewedAt = new Date();
+    }
+    if (trimmedFeedback !== undefined) {
+      assessment.reviewFeedback = trimmedFeedback;
     }
 
     await assessmentRepository.save(assessment);

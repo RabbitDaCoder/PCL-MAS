@@ -11,6 +11,14 @@ class DirectMessageRepository {
   async existsForStudentAndClass(_studentId, _classId) {
     throw new Error("Not implemented");
   }
+
+  async setFeedback(_messageId, _studentId, _feedback) {
+    throw new Error("Not implemented");
+  }
+
+  async findFeedbackByClass(_classId) {
+    throw new Error("Not implemented");
+  }
 }
 
 module.exports = DirectMessageRepository;

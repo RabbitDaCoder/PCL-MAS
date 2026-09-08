@@ -16,11 +16,14 @@ export async function getLearningPath(classId) {
   return body.data;
 }
 
-export async function reviewLearningPath(classId, { studentId, decision }) {
+export async function reviewLearningPath(
+  classId,
+  { studentId, decision, feedback },
+) {
   const body = await apiRequest(`/classes/${classId}/learning-path/review`, {
     method: "POST",
     auth: true,
-    payload: { studentId, decision },
+    payload: { studentId, decision, feedback },
   });
   return body.data;
 }

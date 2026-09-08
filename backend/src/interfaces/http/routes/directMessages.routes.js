@@ -73,4 +73,48 @@ router.post(
   controller.handleSendDmMessage,
 );
 
+/**
+ * @openapi
+ * /classes/{classId}/dm/{messageId}/feedback:
+ *   post:
+ *     tags: [DirectMessages]
+ *     summary: Student rates an AI-authored message in their own 1:1 thread (thumbs up/down + optional note)
+ *     security: [{ bearerAuth: [] }]
+ *     parameters:
+ *       - in: path
+ *         name: classId
+ *         required: true
+ *         schema: { type: string }
+ *       - in: path
+ *         name: messageId
+ *         required: true
+ *         schema: { type: string }
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [rating]
+ *             properties:
+ *               rating: { type: string, enum: [up, down] }
+ *               note: { type: string }
+ *     responses:
+ *       200:
+ *         description: Feedback recorded
+ *         content:
+ *           application/json:
+ *             schema: { $ref: "#/components/schemas/SuccessResponse" }
+ *       403:
+ *         description: No access to this class
+ *       404:
+ *         description: Message not found, or not an AI-authored message
+ */
+router.post(
+  "/classes/:classId/dm/:messageId/feedback",
+  authenticate,
+  requireRole("student"),
+  controller.handleSubmitDmMessageFeedback,
+);
+
 module.exports = router;

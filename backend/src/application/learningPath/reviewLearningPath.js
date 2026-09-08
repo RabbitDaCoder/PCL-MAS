@@ -6,8 +6,8 @@ const { assertLecturerOwnsClass } = require("../classes/classAccess");
 const { runLearningPathGeneration } = require("./generateLearningPath");
 
 async function reviewLearningPath(
-  { classRepository, assessmentRepository, learningProfileRepository },
-  { classId, lecturerId, studentId, decision },
+  { classRepository, assessmentRepository, learningProfileRepository, aiInteractionRepository },
+  { classId, lecturerId, studentId, decision, feedback },
 ) {
   await assertLecturerOwnsClass(classRepository, classId, lecturerId);
   if (!studentId) {
@@ -22,23 +22,28 @@ async function reviewLearningPath(
     throw new AppError("This student has no learning path to review.", 404);
   }
 
+  const trimmedFeedback =
+    typeof feedback === "string" ? feedback.trim().slice(0, 2000) : undefined;
+
   if (decision === "approve") {
     await learningProfileRepository.upsert(studentId, classId, {
       reviewStatus: "approved",
       reviewedAt: new Date(),
       reviewedBy: lecturerId,
+      ...(trimmedFeedback !== undefined ? { reviewFeedback: trimmedFeedback } : {}),
     });
     return { reviewStatus: "approved" };
   }
 
   // Reject: regenerate immediately rather than leaving the student with nothing.
   await runLearningPathGeneration(
-    { classRepository, assessmentRepository, learningProfileRepository },
+    { classRepository, assessmentRepository, learningProfileRepository, aiInteractionRepository },
     { classId, studentId },
   );
   await learningProfileRepository.upsert(studentId, classId, {
     reviewedAt: new Date(),
     reviewedBy: lecturerId,
+    ...(trimmedFeedback !== undefined ? { reviewFeedback: trimmedFeedback } : {}),
   });
   return { reviewStatus: "pending" };
 }

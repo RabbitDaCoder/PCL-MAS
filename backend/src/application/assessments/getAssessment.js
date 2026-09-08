@@ -19,7 +19,7 @@ function sanitizeQuestion(question) {
 }
 
 async function getAssessment(
-  { classRepository, materialRepository, assessmentRepository },
+  { classRepository, materialRepository, assessmentRepository, aiInteractionRepository },
   { classId, userId, role, type },
 ) {
   const dbType = TYPE_MAP[type];
@@ -44,7 +44,7 @@ async function getAssessment(
       }
 
       await generateAssessment(
-        { classRepository, materialRepository, assessmentRepository },
+        { classRepository, materialRepository, assessmentRepository, aiInteractionRepository },
         {
           classId,
           lecturerId: classDoc.lecturerId.toString(),
@@ -100,7 +100,7 @@ async function getAssessment(
     }
 
     await generateAssessment(
-      { classRepository, materialRepository, assessmentRepository },
+      { classRepository, materialRepository, assessmentRepository, aiInteractionRepository },
       {
         classId,
         lecturerId: classDoc.lecturerId.toString(),

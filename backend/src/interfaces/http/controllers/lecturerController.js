@@ -1,6 +1,7 @@
 // Composition root for lecturer-dashboard routes: wires concrete infrastructure into use-cases.
 const MongoUserRepository = require("../../../infrastructure/repositories/MongoUserRepository");
 const MongoClassRepository = require("../../../infrastructure/repositories/MongoClassRepository");
+const MongoApprovalRepository = require("../../../infrastructure/repositories/MongoApprovalRepository");
 const tokenService = require("../../../infrastructure/security/tokenService");
 const getLecturerDashboardStats = require("../../../application/lecturer/getLecturerDashboardStats");
 const getLecturerPendingActions = require("../../../application/lecturer/getLecturerPendingActions");
@@ -10,7 +11,8 @@ const { success } = require("../../../utils/apiResponse");
 
 const userRepository = new MongoUserRepository();
 const classRepository = new MongoClassRepository();
-const deps = { userRepository, classRepository, tokenService };
+const approvalRepository = new MongoApprovalRepository();
+const deps = { userRepository, classRepository, approvalRepository, tokenService };
 
 async function handleGetDashboardStats(req, res, next) {
   try {

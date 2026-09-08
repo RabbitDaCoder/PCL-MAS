@@ -31,12 +31,18 @@ export async function submitAssessment(classId, type, answers) {
   return body.data;
 }
 
-export async function reviewAssessment(classId, type, decision, questions) {
+export async function reviewAssessment(
+  classId,
+  type,
+  decision,
+  questions,
+  feedback,
+) {
   const body = await apiRequest(
     `/classes/${classId}/assessments/${type}/review`,
     {
       method: "POST",
-      payload: { decision, questions },
+      payload: { decision, questions, feedback },
       auth: true,
     },
   );

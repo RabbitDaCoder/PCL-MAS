@@ -15,6 +15,7 @@ function toDmSummary(message) {
         ? (AI_AGENT_DISPLAY_NAMES[message.aiAgent] ?? "Administrative AI")
         : undefined,
     content: message.content,
+    feedback: message.feedback ?? null,
     createdAt: message.createdAt,
   };
 }

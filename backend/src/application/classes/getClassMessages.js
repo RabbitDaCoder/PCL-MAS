@@ -17,6 +17,7 @@ function toMessageSummary(message) {
     senderRole: message.senderType,
     aiAgent: message.senderType === "ai" ? (message.aiAgent ?? "Admin") : undefined,
     content: message.content,
+    feedback: message.feedback ?? null,
     createdAt: message.createdAt,
   };
 }

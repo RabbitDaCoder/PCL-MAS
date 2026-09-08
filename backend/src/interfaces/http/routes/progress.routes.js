@@ -63,4 +63,38 @@ router.get(
   controller.handleGetMyProgress,
 );
 
+/**
+ * @openapi
+ * /classes/{classId}/progress/{studentId}:
+ *   get:
+ *     tags: [Progress]
+ *     summary: Deep-dive analytics + personalization detail for one student (lecturer owner only)
+ *     security: [{ bearerAuth: [] }]
+ *     parameters:
+ *       - in: path
+ *         name: classId
+ *         required: true
+ *         schema: { type: string }
+ *       - in: path
+ *         name: studentId
+ *         required: true
+ *         schema: { type: string }
+ *     responses:
+ *       200:
+ *         description: Student detail retrieved
+ *         content:
+ *           application/json:
+ *             schema: { $ref: "#/components/schemas/SuccessResponse" }
+ *       403:
+ *         description: Not this class's lecturer
+ *       404:
+ *         description: Student not found in this class
+ */
+router.get(
+  "/classes/:classId/progress/:studentId",
+  authenticate,
+  requireRole("lecturer"),
+  controller.handleGetStudentDetail,
+);
+
 module.exports = router;

@@ -33,6 +33,7 @@ const assessmentSchema = new Schema(
       default: "pending",
     },
     approvedBy: { type: Types.ObjectId, ref: "User" },
+    reviewFeedback: { type: String, trim: true },
     reviewedAt: { type: Date },
     startedAt: { type: Date },
     completedAt: { type: Date },

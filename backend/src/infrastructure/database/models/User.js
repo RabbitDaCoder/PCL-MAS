@@ -27,6 +27,9 @@ const userSchema = new Schema(
     bio: { type: String, trim: true },
     isActive: { type: Boolean, default: true },
     onboardingCompleted: { type: Boolean, default: false },
+    // Login-frequency analytics — updated on every successful login (see application/auth/login.js).
+    lastLoginAt: { type: Date },
+    loginCount: { type: Number, default: 0 },
     // Hashed (never the raw token) + expiry for the forgot/reset-password flow.
     passwordResetTokenHash: { type: String, select: false },
     passwordResetExpires: { type: Date, select: false },
